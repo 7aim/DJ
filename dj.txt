@@ -1,0 +1,1010 @@
+# SQL Cheatsheet (Notion)
+
+## 0) Əsas qaydalar
+
+- SQL **case-insensitive**: `select` = `SELECT` (amma standart böyük hərflə yazılır)
+- Sətirin sonu: `;`
+- Mətn **tək dırnaq**: `'IT_PROG'`, `'A%'`
+- Sütun seçimi:  hamısı deməkdir
+- Şərt yoxdursa bütün cədvəl gəlir.
+
+---
+
+## 1) SELECT – məlumat oxuma
+
+### 1.1 Hamısı
+
+```sql
+SELECT*
+FROM employees;
+```
+
+### 1.2 Seçilmiş sütunlar
+
+```sql
+SELECT first_name, last_name
+FROM employees;
+```
+
+### 1.3 Təkrarsız dəyərlər (DISTINCT)
+
+```sql
+SELECTDISTINCT department_id
+FROM employees;
+```
+
+---
+
+## 2) WHERE – filtr (ən vacib hissə)
+
+### 2.1 Müqayisə operatorları
+
+- `=`, `!=` / `<>`
+- `>`, `<`, `>=`, `<=`
+
+```sql
+SELECT*
+FROM employees
+WHERE salary>10000;
+```
+
+### 2.2 AND / OR (məntiq)
+
+- `AND` → hər ikisi doğru olmalıdır
+- `OR` → biri doğru olsa kifayətdir
+- **Qayda:** `AND` daha “güclüdür”, qarışıq olanda mötərizə yaz!
+
+```sql
+SELECT*
+FROM employees
+WHERE (salaryBETWEEN5000AND10000)
+OR (manager_id=101);
+```
+
+### 2.3 BETWEEN (aralıq) — daxil edir
+
+```sql
+SELECT*
+FROM employees
+WHERE salaryBETWEEN4000AND8000;
+```
+
+### 2.4 IN (seçilmiş siyahı)
+
+```sql
+SELECT*
+FROM employees
+WHERE department_idIN (20,30,50);
+```
+
+### 2.5 NULL yoxlaması
+
+```sql
+SELECT*
+FROM employees
+WHERE manager_idISNULL;
+
+SELECT*
+FROM employees
+WHERE manager_idISNOT NULL;
+```
+
+---
+
+## 3) LIKE – mətn axtarışı
+
+Wildcard-lar:
+
+- `%` → istənilən sayda simvol
+- `_` → 1 simvol
+
+### 3.1 Başlanğıc / son / içində
+
+```sql
+-- A ilə başlayan adlar
+SELECT*
+FROM employees
+WHERE first_nameLIKE'A%';
+
+-- 'son' ilə bitən soyadlar
+SELECT*
+FROM employees
+WHERE last_nameLIKE'%son';
+
+-- adında 'e' hərfi olanlar
+SELECT*
+FROM employees
+WHERE first_nameLIKE'%e%';
+```
+
+### 3.2 Email domeni (gmail)
+
+```sql
+SELECT*
+FROM employees
+WHERE emailLIKE'%@gmail.com';
+```
+
+> Bəzi bazalarda email ALI.G kimi saxlanır və domain yoxdursa, imtahan müəllimi domainli format istəyirsə LIKE '%gmail.com' yaz.
+> 
+
+---
+
+## 4) ORDER BY – sıralama
+
+- `ASC` (artan) defaultdur
+- `DESC` (azalan)
+
+```sql
+SELECT*
+FROM employees
+ORDERBY salaryDESC;
+
+SELECT*
+FROM employees
+ORDERBY last_nameASC;
+
+SELECT*
+FROM employees
+ORDERBY hire_dateDESC;
+```
+
+---
+
+## 5) LIMIT – ilk N nəticə (tez-tez lazım olur)
+
+```sql
+SELECT*
+FROM employees
+ORDERBY salaryDESC
+LIMIT5;
+```
+
+---
+
+## 6) INSERT – yeni sətir əlavə et
+
+**Qayda:** sütun adları ilə dəyərlərin sayı eyni olmalıdır.
+
+```sql
+INSERT INTO employees (first_name, last_name, email, salary, job_id, department_id)
+VALUES ('Ali','Aliyev','ali@gmail.com',7000,'IT_PROG',60);
+```
+
+5 işçi əlavə etmək üçün 5 dəfə `INSERT` yazılır (və ya çoxlu VALUES — müəllimin formatına görə).
+
+---
+
+## 7) UPDATE – məlumatı yenilə
+
+**ÇOX VACİB:** `WHERE` yazmasan hamısını dəyişəcək!
+
+### 7.1 Maaşı 200 artır (IT_PROG)
+
+```sql
+UPDATE employees
+SET salary= salary+200
+WHERE job_id='IT_PROG';
+```
+
+### 7.2 Tək bir işçini yenilə (id varsa)
+
+```sql
+UPDATE employees
+SET salary=9000
+WHERE employee_id=101;
+```
+
+---
+
+# 8) Şəkildəki imtahan suallarının hazır cavabları (2.1–2.16)
+
+### 2.1 Bütün işçilərin ad+soyadını seç
+
+```sql
+SELECT first_name, last_name
+FROM employees;
+```
+
+### 2.2 Maaşı 10000-dən çox olanların email-i
+
+```sql
+SELECT email
+FROM employees
+WHERE salary>10000;
+```
+
+### 2.3 Maaş 5000–10000 arası olan VƏ YA manager_id=101
+
+```sql
+SELECT*
+FROM employees
+WHERE (salaryBETWEEN5000AND10000)
+OR (manager_id=101);
+```
+
+### 2.4 Adında 'a' olan VƏ YA soyadında 'e' olan
+
+```sql
+SELECT*
+FROM employees
+WHERE first_nameLIKE'%a%'
+OR last_nameLIKE'%e%';
+```
+
+### 2.5 job_id='IT_PROG' və salary>6000
+
+```sql
+SELECT*
+FROM employees
+WHERE job_id='IT_PROG'
+AND salary>6000;
+```
+
+### 2.6 Adında 'e' olanlar
+
+```sql
+SELECT*
+FROM employees
+WHERE first_nameLIKE'%e%';
+```
+
+### 2.7 Email-i 'gmail.com' ilə bitənlər
+
+```sql
+SELECT*
+FROM employees
+WHERE emailLIKE'%gmail.com';
+```
+
+### 2.8 Soyadında 'son' olanlar
+
+```sql
+SELECT*
+FROM employees
+WHERE last_nameLIKE'%son%';
+```
+
+### 2.9 Maaş 4000–8000 arası
+
+```sql
+SELECT*
+FROM employees
+WHERE salaryBETWEEN4000AND8000;
+```
+
+### 2.10 department_id 20–100 arası
+
+```sql
+SELECT*
+FROM employees
+WHERE department_idBETWEEN20AND100;
+```
+
+### 2.11 Maaşa görə azalan sırala
+
+```sql
+SELECT*
+FROM employees
+ORDERBY salaryDESC;
+```
+
+### 2.12 Soyada görə artan sırala
+
+```sql
+SELECT*
+FROM employees
+ORDERBY last_nameASC;
+```
+
+### 2.13 Hire_date görə azalan sırala
+
+```sql
+SELECT*
+FROM employees
+ORDERBY hire_dateDESC;
+```
+
+### 2.14 Bütün fərqli department_id-lər
+
+```sql
+SELECTDISTINCT department_id
+FROM employees;
+```
+
+### 2.15 5 yeni işçi əlavə et (nümunə)
+
+```sql
+INSERT INTO employees (first_name, last_name, email, salary, job_id, department_id)
+VALUES ('A1','B1','a1@gmail.com',5000,'IT_PROG',60);
+
+INSERT INTO employees (first_name, last_name, email, salary, job_id, department_id)
+VALUES ('A2','B2','a2@gmail.com',5200,'IT_PROG',60);
+
+INSERT INTO employees (first_name, last_name, email, salary, job_id, department_id)
+VALUES ('A3','B3','a3@gmail.com',5400,'SA_REP',80);
+
+INSERT INTO employees (first_name, last_name, email, salary, job_id, department_id)
+VALUES ('A4','B4','a4@gmail.com',5600,'SA_REP',80);
+
+INSERT INTO employees (first_name, last_name, email, salary, job_id, department_id)
+VALUES ('A5','B5','a5@gmail.com',5800,'HR_REP',40);
+```
+
+### 2.16 IT_PROG maaşını 200 artır
+
+```sql
+UPDATE employees
+SET salary= salary+200
+WHERE job_id='IT_PROG';
+```
+
+---
+
+## 9) İmtahan “tələləri” (sürətli yaddaş)
+
+- `UPDATE` + `WHERE` unutma → yoxsa hamı dəyişir
+- `OR`/`AND` qarışanda mötərizə qoy
+- `LIKE '%text%'` → içində
+- `LIKE 'text%'` → əvvəlində
+- `BETWEEN a AND b` → a və b daxildir
+- `DISTINCT` → təkrarı silir
+
+---
+
+İstəsən növbəti mesajda bu cheatsheet-i bir az da “imtahan yüksəltməsi” edim: **COUNT/AVG/MIN/MAX**, `GROUP BY`, `HAVING` və çox sadə `JOIN` də əlavə edim (çox vaxt müəllim bonus kimi salır).
+
+# Python Cheatsheet (Notion) — Lambda, Map, Filter, Reduce, List Comprehension
+
+## 0) Ümumi ideya (imtahan məntiqi)
+
+Bu mövzuların hamısı “**list/iterable** üzərində sürətli əməliyyat” üçündür:
+
+- **map** → *hər elementdə dəyişiklik et*
+- **filter** → *şərtə görə seç*
+- **reduce** → *hamısını 1 nəticəyə yığ*
+- **lambda** → *qısa funksiya yaz*
+- **list comprehension** → *yeni list yarat (seç + dəyiş)*
+
+---
+
+## 1) lambda — nədir, nə işə yarayır?
+
+**lambda** qısa “adsız funksiya”dır. Adətən `map/filter/reduce` içində istifadə olunur.
+
+**Sintaksis:**
+
+```python
+lambda arguments: expression
+```
+
+### Nümunə 1: iki ədədin cəmi
+
+```python
+add =lambda a, b: a + b
+print(add(3,5))# 8
+```
+
+### Nümunə 2: kvadrat
+
+```python
+sq =lambda x: x**2
+print(sq(6))# 36
+```
+
+✅ İmtahan qeydi: lambda **expression** qaytarır, çox uzun yazmağa uyğun deyil.
+
+---
+
+## 2) map — nə işə yarayır?
+
+**map(function, iterable)** → iterable-in *hər elementinə* funksiyanı tətbiq edir.
+
+⚠️ Python 3-də `map` iterator qaytarır → çox vaxt `list(...)` edirik.
+
+### Nümunə 1 (şəkildəki 1.1): sözləri böyük hərfə çevir
+
+```python
+words = ["salam","dunya","python"]
+result =list(map(str.upper, words))
+print(result)# ['SALAM', 'DUNYA', 'PYTHON']
+```
+
+### Nümunə 2: ədədləri 2-yə vur
+
+```python
+nums = [1,2,3]
+result =list(map(lambda x: x *2, nums))
+print(result)# [2, 4, 6]
+```
+
+---
+
+## 3) filter — nə işə yarayır?
+
+**filter(condition, iterable)** → yalnız şərti (**True**) ödəyən elementləri saxlayır.
+
+⚠️ Python 3-də `filter` iterator qaytarır → `list(...)` edirik.
+
+### Nümunə 1: müsbət ədədlər (şəkildəki 1.5)
+
+```python
+nums = [-3,0,5, -1,8,2]
+positives =list(filter(lambda x: x >0, nums))
+print(positives)# [5, 8, 2]
+```
+
+### Nümunə 2: cüt ədədlər
+
+```python
+nums = [1,2,3,4,5,6]
+evens =list(filter(lambda x: x %2 ==0, nums))
+print(evens)# [2, 4, 6]
+```
+
+---
+
+## 4) reduce — nə işə yarayır?
+
+**reduce(function, iterable)** → elementləri “yığaraq” **1 nəticə** çıxarır (cəm, hasil, max və s.)
+
+İstifadə üçün:
+
+```python
+from functoolsimport reduce
+```
+
+### Nümunə 1: cəm
+
+```python
+from functoolsimport reduce
+
+nums = [1,2,3,4]
+total = reduce(lambda a, b: a + b, nums)
+print(total)# 10
+```
+
+### Nümunə 2: hasil
+
+```python
+product = reduce(lambda a, b: a * b, nums)
+print(product)# 24
+```
+
+### Nümunə 3: maksimum
+
+```python
+mx = reduce(lambda a, b: aif a > belse b, nums)
+print(mx)# 4
+```
+
+---
+
+## 5) List Comprehension — nə işə yarayır?
+
+**List comprehension** yeni list yaratmağın ən rahat yoludur. İçində həm dəyişiklik, həm seçim ola bilər.
+
+**Sintaksis:**
+
+```python
+[expressionfor itemin iterableif condition]
+```
+
+### Nümunə 1 (şəkildəki 1.2): ədədi öz qüvvətinə yüksəlt
+
+```python
+nums = [2,3,4]
+result = [x ** xfor xin nums]
+print(result)# [4, 27, 256]
+```
+
+### Nümunə 2: cütlərin kvadratı (şəkildəki 1.3-ün alternativi)
+
+```python
+nums = [1,2,3,4,5,6]
+result = [x**2for xin numsif x %2 ==0]
+print(result)# [4, 16, 36]
+```
+
+### Nümunə 3: sözlərin uzunluğu
+
+```python
+words = ["salam","python","ok"]
+lengths = [len(w)for win words]
+print(lengths)# [5, 6, 2]
+```
+
+---
+
+## 6) Şəkildəki sualların tam həlli (1.1–1.5)
+
+### 1.1 map ilə sözləri böyük hərfə çevir
+
+```python
+words = ["salam","dunya","python"]
+print(list(map(str.upper, words)))
+```
+
+### 1.2 list comprehension: ədədi öz qüvvətinə yüksəlt
+
+```python
+nums = [2,3,4]
+print([x**xfor xin nums])
+```
+
+### 1.3 map + filter: cütləri seç, kvadratını al
+
+```python
+nums = [1,2,3,4,5,6]
+evens =filter(lambda x: x %2 ==0, nums)
+squares =list(map(lambda x: x**2, evens))
+print(squares)
+```
+
+### 1.4 lambda: iki ədədin cəmi
+
+```python
+sum2 =lambda a, b: a + b
+print(sum2(5,7))
+```
+
+### 1.5 filter + lambda: müsbətləri seç
+
+```python
+nums = [-3,0,5, -1,8,2]
+print(list(filter(lambda x: x >0, nums)))
+```
+
+---
+
+## 7) İmtahan “seçim qaydası” (hansı halda hansını yazım?)
+
+- “**Hər elementə əməliyyat**” → `map` və ya comprehension
+- “**Şərtə görə seç**” → `filter` və ya comprehension (`if`)
+- “**Bir nəticə çıxart** (cəm/hasil/max)” → `reduce`
+- “**Qısa funksiya lazımdır**” → `lambda`
+- “**Həm seç, həm dəyiş, nəticə list olsun**” → comprehension ən yaxşısı
+
+---
+
+İstəsən indi mən sənə bu mövzudan **10 ədəd imtahan tipli mini sual** (hər birindən qarışıq) yazım, sən cavab yaz, mən də “düzgün + daha yaxşı alternativ” formasında yoxlayım.
+
+# Django Cheatsheet (Notion) — İmtahan üçün “Bunu et dedikdə nə etməliyəm?”
+
+## 0) Django layihə quruluşu (ən vacib anlayış)
+
+### Project vs App
+
+- **Project**: bütün sistem (settings, əsas urls)
+- **App**: modul hissə (məs: `blog`, `books`)
+
+Tipik struktur:
+
+- `manage.py` → komandalar (`runserver`, `migrate` və s.)
+- `project/settings.py` → ayarlar (INSTALLED_APPS, DB, templates, static)
+- `project/urls.py` → əsas URL yönləndirmə
+- `app/models.py` → DB cədvəlləri
+- `app/views.py` → səhifə loqikası (nə göstərək?)
+- `app/urls.py` → app-in URL-ləri
+- `app/templates/...` → HTML
+- `app/admin.py` → admin panelə qoşma
+- `static/` → CSS/JS/images
+- `migrations/` → DB dəyişiklik tarixçəsi
+
+---
+
+## 1) İmtahanda ən çox gələn “komandalar”
+
+```bash
+python manage.py runserver
+python manage.py startapp <appname>
+
+python manage.py makemigrations
+python manage.py migrate
+
+python manage.py createsuperuser
+```
+
+**Qızıl qayda:**
+
+- `models.py` dəyişdi → **makemigrations** → **migrate**
+- Adminə girmək üçün → **createsuperuser**
+
+---
+
+## 2) “Layihəni GitHub-dan yüklə və işə sal” (3.1 tipli)
+
+✅ Nə edirsən?
+
+```bash
+gitclone <repo>
+cd <repo>
+
+python -m venv venv
+# Win: venv\Scripts\activate
+# Mac/Linux: source venv/bin/activate
+
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+**Problem olarsa:**
+
+- paket çatmır → `pip install django` və ya error-da yazılan paketi install et.
+
+---
+
+## 3) “Yeni səhifə yarat / menu əlavə et” (3.2, 3.4, 3.10, 3.11)
+
+Bu cür tapşırıq həmişə 4 addımdır:
+
+### Şablon 4 addım
+
+1. **view** yaz (`views.py`)
+2. **url** qoş (`urls.py`)
+3. **template** yarat (`templates/...html`)
+4. **menu/base.html**də link əlavə et
+
+### Nümunə: About səhifəsi
+
+**views.py**
+
+```python
+from django.shortcutsimport render
+
+defabout(request):
+return render(request,"about.html")
+```
+
+**urls.py**
+
+```python
+from django.urlsimport path
+from .viewsimport about
+
+urlpatterns = [
+    path("about/", about, name="about"),
+]
+```
+
+**templates/about.html**
+
+```html
+<h1>About</h1>
+<p>Ad Soyad: ...</p>
+```
+
+**base.html** (menu)
+
+```html
+<ahref="{% url 'about' %}">About</a>
+```
+
+---
+
+## 4) “Model yarat” (3.3, 3.8, 3.5, 3.6)
+
+✅ Model deməkdir: DB-də cədvəl.
+
+### Model yaratmaq üçün standart checklist
+
+1. `models.py`də class yaz
+2. `python manage.py makemigrations`
+3. `python manage.py migrate`
+4. adminə əlavə et (`admin.py`)
+5. admin paneldən data əlavə et
+
+### Nümunə: Book modeli (3.3)
+
+**books/models.py**
+
+```python
+from django.dbimport models
+
+classBook(models.Model):
+    title = models.CharField(max_length=200)
+    author = models.CharField(max_length=120)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+def__str__(self):
+returnself.title
+```
+
+**migrate**
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+**books/admin.py**
+
+```python
+from django.contribimport admin
+from .modelsimport Book
+
+admin.site.register(Book)
+```
+
+---
+
+## 5) “Admin paneldən 5 məlumat əlavə et” (3.3)
+
+✅ Nə edirsən?
+
+1. `admin.py`də modeli register et
+2. `createsuperuser`
+3. `/admin`ə gir
+4. modelə daxil ol və “Add” ilə 5 dənə əlavə et
+
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+## 6) “Comment sistemi qur” (3.5)
+
+İmtahan məntiqi: **Post** var → **Comment** əlavə et → Post silinsə commentlər də silinsin.
+
+### Model (ForeignKey)
+
+**models.py**
+
+```python
+classComment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    name = models.CharField(max_length=80)
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+```
+
+**migrate**
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### Post detail səhifəsində:
+
+- commentləri göstər
+- form ilə comment əlavə et
+
+**views.py** (sadə)
+
+```python
+from django.shortcutsimport get_object_or_404, redirect, render
+from .modelsimport Post, Comment
+
+defpost_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+if request.method =="POST":
+        Comment.objects.create(
+            post=post,
+            name=request.POST.get("name",""),
+            body=request.POST.get("body","")
+        )
+return redirect("post_detail", pk=pk)
+
+return render(request,"post_detail.html", {"post": post})
+```
+
+**post_detail.html**
+
+```html
+<h1>{{ post.title }}</h1>
+
+<h3>Comments</h3>
+{% for c in post.comments.all %}
+<p><b>{{ c.name }}</b>: {{ c.body }}</p>
+{% empty %}
+<p>Şərh yoxdur.</p>
+{% endfor %}
+
+<formmethod="post">
+  {% csrf_token %}
+<inputname="name"placeholder="Ad">
+<textareaname="body"placeholder="Şərh"></textarea>
+<buttontype="submit">Göndər</button>
+</form>
+```
+
+---
+
+## 7) “Tag əlavə et + tag üzrə axtarış” (3.6, 3.8, 3.9, 3.10)
+
+Tag sistemi adətən **ManyToMany** olur.
+
+### Tag modeli (3.8)
+
+```python
+classTag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+def__str__(self):
+returnself.name
+```
+
+### Post-a tags əlavə et (ManyToMany)
+
+```python
+classPost(models.Model):
+    title = models.CharField(max_length=200)
+    body = models.TextField()
+    tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
+```
+
+### Adminə əlavə et (3.9)
+
+```python
+admin.site.register(Tag)
+```
+
+### Tags list səhifəsi (3.10)
+
+**views.py**
+
+```python
+deftags_list(request):
+    tags = Tag.objects.all().order_by("name")
+return render(request,"tags_list.html", {"tags": tags})
+```
+
+**urls.py**
+
+```python
+path("tags/", tags_list, name="tags_list")
+```
+
+**templates/tags_list.html**
+
+```html
+<h1>Tags</h1>
+<ul>
+  {% for t in tags %}
+<li>{{ t.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+### Tag üzrə post axtarışı (3.6)
+
+```python
+defposts_by_tag(request, tag_name):
+    posts = Post.objects.filter(tags__name=tag_name)
+return render(request,"posts_by_tag.html", {"posts": posts,"tag": tag_name})
+```
+
+---
+
+## 8) “urls.py nə işə yarayır?” (imtahan sualı ola bilər)
+
+- `urls.py` → istifadəçinin yazdığı URL-ni uyğun **view**ə göndərir.
+- `name="..."` → template-də `{% url 'name' %}` ilə çağırmaq üçün.
+
+Nümunə:
+
+```python
+path("about/", about, name="about")
+```
+
+---
+
+## 9) “views.py nə işə yarayır?”
+
+- **view** → request qəbul edir, data hazırlayır, template qaytarır.
+
+Ən sadə view:
+
+```python
+defabout(request):
+return render(request,"about.html")
+```
+
+---
+
+## 10) “templates nə işə yarayır?”
+
+- HTML-lər burda olur.
+- Django template tag-ları:
+    - `{{ variable }}`
+    - `{% for %}`, `{% if %}`
+    - `{% url %}`
+    - `{% load static %}`
+
+---
+
+## 11) “My blog yazısını öz adınla dəyiş” (3.11)
+
+✅ Harada olur?
+
+- çox vaxt `base.html` və ya `index.html`də:
+
+```html
+<aclass="navbar-brand"href="/">Eli Hüseynov Blogu</a>
+```
+
+---
+
+## 12) “Post başlığını qırmızı et” (3.12)
+
+✅ 2 yol var:
+
+### Yol A: inline style (tez, amma səliqəsiz)
+
+```html
+<h1style="color:red;">{{ post.title }}</h1>
+```
+
+### Yol B: CSS (düzgün yol)
+
+**post_detail.html**
+
+```html
+<h1class="post-title">{{ post.title }}</h1>
+```
+
+**static/css/style.css**
+
+```css
+.post-title {color: red; }
+```
+
+**base.html**
+
+```html
+{% load static %}
+<linkrel="stylesheet"href="{% static 'css/style.css' %}">
+```
+
+---
+
+## 13) “settings.py-də ən çox toxunulan yerlər”
+
+### INSTALLED_APPS
+
+Yeni app əlavə edəndə:
+
+```python
+INSTALLED_APPS = [
+  ...
+'books',
+]
+```
+
+### Templates
+
+Template tapmırsa, problem buradan ola bilər.
+
+### Static
+
+CSS/JS işləmirsə, `static` və `{% load static %}` yoxla.
+
+---
+
+## 14) İmtahan “sürətli xəritə” (tapşırıq → hansı fayllar?)
+
+- “model yarat” → `models.py` + `makemigrations/migrate`
+- “admin panelə əlavə et” → `admin.py`
+- “səhifə yarat” → `views.py` + `urls.py` + `templates/*.html`
+- “menu əlavə et” → `base.html` (və `{% url %}`)
+- “dizayn/CSS dəyiş” → `static/css/...` + `base.html`də link
+- “comment/tag sistemi” → `models.py` + `views.py` + `templates` + `urls.py`
+
+---
+
+## 15) Ən tipik imtahan xətaları (sən düşməyəsən)
+
+- Model yazıb **migrate etməmək**
+- Modeli adminə **register etməmək**
+- Template adını səhv yazmaq (`about.html` vs `About.html`)
+- URL `name` verib template-də fərqli çağırmaq
+- CSS yazıb `{% load static %}` etməmək
+
+---
+
+İstəsən, indi bu cheatsheet əsasında sənə **10 dənə Django imtahan sualı** yazım (tam bu tapşırıqların dili ilə: “Bunu et”, “hansı faylda yazılır”, “hansı komanda işlədilir”), sən cavablandır, mən də sənin cavabını imtahan kimi yoxlayım.
